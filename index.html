@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Earn Money App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{
+ --bg:#020617;
+ --bg2:#0f172a;
+ --glass:rgba(255,255,255,.12);
+ --border:rgba(255,255,255,.22);
+ --green:#22c55e;
+ --accent:#ffb300;
+ --text:#fff;
+ --muted:#c7d2fe;
+ --danger:#ef4444;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI', Tahoma, sans-serif}
+body{
+ min-height:100vh;
+ background:radial-gradient(circle at top,#1e3a8a,var(--bg));
+ color:var(--text);
+ perspective:1200px;
+ overflow-x:hidden
+}
+.hide{display:none!important}
+.show{display:block!important}
+
+/* AUTH SCREENS */
+.auth{
+ max-width:420px;
+ margin:auto;
+ padding-top:80px;
+ padding-bottom:40px
+}
+
+/* MAIN APP */
+.app{
+ max-width:420px;
+ margin:auto;
+ padding-bottom:120px;
+ transform-style:preserve-3d;
+}
+
+/* 3D CARD */
+.card{
+ background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.05));
+ backdrop-filter:blur(18px);
+ border:1px solid var(--border);
+ border-radius:22px;
+ padding:20px;
+ margin:14px;
+ box-shadow:0 25px 50px rgba(0,0,0,.7);
+ transform:translateZ(18px);
+ animation:pop .35s ease
+}
+@keyframes pop{
+ from{opacity:0;transform:translateZ(-30px) scale(.95)}
+ to{opacity:1;transform:translateZ(18px)}
+}
+
+h2,h3{text-align:center;margin-bottom:15px;font-size:24px}
+h3{font-size:18px}
+
+input{
+ width:100%;padding:14px;margin:10px 0;
+ border-radius:14px;
+ border:1px solid var(--border);
+ background:rgba(0,0,0,.4);
+ color:#fff;
+ font-size:14px;
+ transition:.3s
+}
+input:focus{
+ outline:none;
+ border-color:var(--green);
+ background:rgba(0,0,0,.6)
+}
+input::placeholder{color:#999}
+
+button{
+ width:100%;padding:14px;margin-top:12px;
+ border-radius:16px;
+ background:var(--green);
+ border:none;
+ color:#000;
+ font-weight:800;
+ font-size:15px;
+ cursor:pointer;
+ transition:.25s;
+ box-shadow:0 4px 15px rgba(34,197,94,.3)
+}
+button:hover:not(:disabled){
+ background:#16a34a;
+ box-shadow:0 6px 20px rgba(34,197,94,.5)
+}
+button:active:not(:disabled){transform:scale(.96)}
+button:disabled{opacity:.5;cursor:not-allowed}
+
+.btn-accent{background:var(--accent);color:#000}
+.btn-accent:hover:not(:disabled){
+ background:#f59e0b;
+ box-shadow:0 6px 20px rgba(255,179,0,.5)
+}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover:not(:disabled){
+ background:#dc2626;
+ box-shadow:0 6px 20px rgba(239,68,68,.5)
+}
+
+.note{
+ font-size:13px;
+ color:var(--muted);
+ text-align:center;
+ cursor:pointer;
+ margin-top:15px;
+ transition:.3s
+}
+.note:hover{color:var(--green)}
+
+.row{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin:10px 0
+}
+.col{flex:1}
+
+.big{
+ font-size:42px;
+ font-weight:900;
+ color:var(--green);
+ margin:20px 0;
+ text-align:center;
+ letter-spacing:-1px
+}
+.small{font-size:12px;color:var(--muted)}
+
+.task{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:14px;
+ margin:8px 0;
+ border-radius:14px;
+ border:1px solid var(--border);
+ background:rgba(255,255,255,.05);
+ transition:.3s
+}
+.task:hover{border-color:var(--green);background:rgba(34,197,94,.1)}
+.task.done{opacity:.5}
+
+.task-info{flex:1}
+.task-title{font-weight:600;margin-bottom:4px}
+.task-reward{font-size:13px;color:var(--green);font-weight:700}
+
+/* HEADER */
+.header{
+ background:linear-gradient(135deg,#16a34a,#0ea5e9);
+ padding:20px;
+ border-bottom-left-radius:22px;
+ border-bottom-right-radius:22px;
+ box-shadow:0 10px 30px rgba(0,0,0,.3)
+}
+.profile{
+ display:flex;
+ align-items:center;
+ gap:12px
+}
+.avatar{
+ width:50px;height:50px;
+ border-radius:50%;
+ background:#fff;
+ color:#16a34a;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-weight:900;
+ font-size:24px
+}
+.profile-info{flex:1}
+.profile-info .small{color:rgba(255,255,255,.7)}
+.profile-info .note{color:#fff;margin:0}
+
+/* NAV */
+.nav{
+ position:fixed;
+ bottom:0;
+ left:50%;
+ transform:translateX(-50%);
+ width:100%;
+ max-width:420px;
+ background:rgba(2,6,23,.98);
+ border-top:1px solid var(--border);
+ display:flex;
+ justify-content:space-around;
+ padding:8px 0;
+ z-index:100
+}
+.nav div{
+ font-size:11px;
+ color:#9ca3af;
+ cursor:pointer;
+ padding:8px;
+ flex:1;
+ text-align:center;
+ transition:.3s;
+ user-select:none
+}
+.nav div.active{
+ color:var(--green);
+ font-weight:800
+}
+
+.status-msg{
+ font-size:13px;
+ padding:10px;
+ border-radius:10px;
+ margin-top:10px;
+ text-align:center;
+ display:none
+}
+.status-msg.success{
+ background:rgba(34,197,94,.2);
+ color:var(--green);
+ display:block
+}
+.status-msg.error{
+ background:rgba(239,68,68,.2);
+ color:var(--danger);
+ display:block
+}
+
+.ad-modal{
+ position:fixed;
+ top:0;left:0;
+ width:100%;height:100%;
+ background:rgba(0,0,0,.8);
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ z-index:200;
+ animation:fadeIn .3s
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.ad-box{
+ background:var(--bg2);
+ border:1px solid var(--border);
+ border-radius:20px;
+ padding:30px;
+ text-align:center;
+ max-width:300px
+}
+.ad-timer{
+ font-size:32px;
+ font-weight:900;
+ color:var(--accent);
+ margin:20px 0
+}
+
+.stat-grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px;
+ margin:15px 0
+}
+.stat-item{
+ background:rgba(255,255,255,.05);
+ border:1px solid var(--border);
+ border-radius:14px;
+ padding:15px;
+ text-align:center
+}
+.stat-label{font-size:12px;color:var(--muted);margin-bottom:8px}
+.stat-value{font-size:24px;font-weight:900;color:var(--green)}
+
+@media (max-width:480px){
+ .card{margin:10px;padding:16px}
+ .big{font-size:36px}
+ h2,h3{font-size:20px}
+}
+</style>
+</head>
+
+<body>
+
+<!-- AUTH CONTAINER -->
+<div class="auth" id="authBox">
+
+ <!-- REGISTER -->
+ <div class="card" id="registerBox">
+  <h2>📱 Create Account</h2>
+  <p style="text-align:center;color:var(--muted);margin-bottom:15px">Get ₹2 Signup Bonus</p>
+  
+  <input id="rPhone" placeholder="Phone Number (10 digits)" maxlength="10" type="tel">
+  <input id="rPass" type="password" placeholder="Password (min 4 chars)">
+  <input id="rCPass" type="password" placeholder="Confirm Password">
+  <input id="rRef" placeholder="Referral Code (optional)">
+  
+  <button onclick="register()">Sign Up Now</button>
+  <div class="note" onclick="showLogin()">Already have account? Login</div>
+ </div>
+
+ <!-- LOGIN -->
+ <div class="card hide" id="loginBox">
+  <h2>🔐 Login</h2>
+  <p style="text-align:center;color:var(--muted);margin-bottom:15px">Welcome Back!</p>
+  
+  <input id="lPhone" placeholder="Phone Number" maxlength="10" type="tel">
+  <input id="lPass" type="password" placeholder="Password">
+  
+  <button onclick="login()">Login</button>
+  <div class="note" onclick="showRegister()">Create new account</div>
+ </div>
+
+</div>
+
+<!-- MAIN APP -->
+<div class="app hide" id="mainApp">
+
+ <!-- HEADER -->
+ <div class="header">
+  <div class="profile">
+   <div class="avatar">👤</div>
+   <div class="profile-info" style="flex:1">
+    <div class="small">Welcome Back</div>
+    <div id="uPhone" style="font-weight:900;font-size:16px"></div>
+   </div>
+  </div>
+ </div>
+
+ <!-- HOME PAGE -->
+ <div id="homePage">
+  <div class="card">
+   <div class="small" style="text-align:center">💰 Total Balance</div>
+   <div class="big">₹ <span id="bal">0</span></div>
+  </div>
+
+  <div class="card">
+   <div class="row">
+    <div>
+     <div class="small">Daily Check-in</div>
+     <div style="font-weight:600;margin-top:5px">Earn ₹1 Daily</div>
+    </div>
+    <button onclick="checkin()" style="width:auto;padding:8px 16px;margin:0">Claim</button>
+   </div>
+  </div>
+
+  <div class="card">
+   <div class="row">
+    <div>
+     <div class="small">Watch Video Ad</div>
+     <div style="font-weight:600;margin-top:5px">Earn ₹0.50</div>
+    </div>
+    <button onclick="showAdModal()" style="width:auto;padding:8px 16px;margin:0">Watch</button>
+   </div>
+  </div>
+
+  <div class="card">
+   <h3>⚡ Quick Earn</h3>
+   <div class="stat-grid">
+    <div class="stat-item">
+     <div class="stat-label">Daily Bonus</div>
+     <div class="stat-value" id="bonusToday">₹0</div>
+    </div>
+    <div class="stat-item">
+     <div class="stat-label">Ads Watched</div>
+     <div class="stat-value" id="adsWatched">0</div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <!-- TASKS PAGE -->
+ <div id="taskPage" class="hide">
+  <div class="card">
+   <h3>📋 Available Tasks</h3>
+   <div class="small" style="margin-bottom:15px">Complete tasks to earn ₹2 each</div>
+   <div id="taskList"></div>
+  </div>
+ </div>
+
+ <!-- SHARE PAGE -->
+ <div id="sharePage" class="hide">
+  <div class="card">
+   <h3>🔗 Referral Program</h3>
+   <div class="stat-grid">
+    <div class="stat-item">
+     <div class="stat-label">Total Refers</div>
+     <div class="stat-value" id="tRef">0</div>
+    </div>
+    <div class="stat-item">
+     <div class="stat-label">Refer Earning</div>
+     <div class="stat-value" id="tRefE">₹0</div>
+    </div>
+   </div>
+  </div>
+
+  <div class="card">
+   <div class="small">Your Referral Code</div>
+   <div id="refCode" style="font-weight:900;font-size:20px;text-align:center;color:var(--accent);margin:15px 0;padding:12px;border:2px dashed var(--border);border-radius:10px"></div>
+   
+   <button class="btn-accent" onclick="copyCode()">📋 Copy Code</button>
+   <button onclick="shareApp()">📤 Share App</button>
+   <button onclick="claimShare()" style="margin-top:10px">✓ I Shared (+₹5)</button>
+   <div id="shareMsg" class="status-msg"></div>
+  </div>
+
+  <div class="card">
+   <h3>How It Works</h3>
+   <div style="font-size:13px;color:var(--muted);line-height:1.8">
+    ✓ Share your code<br>
+    ✓ Your friend registers<br>
+    ✓ Earn ₹5 per referral<br>
+    ✓ Extra bonus on withdrawal
+   </div>
+  </div>
+ </div>
+
+ <!-- PROFILE PAGE -->
+ <div id="profilePage" class="hide">
+  <div class="card">
+   <h3>💳 Payment Details</h3>
+   <input id="upi" placeholder="Enter UPI ID (e.g. name@okhdfcbank)">
+   <button onclick="saveUpi()">Save UPI</button>
+   <div id="upiMsg" class="status-msg"></div>
+  </div>
+
+  <div class="card">
+   <h3>💸 Withdraw Money</h3>
+   <div class="small" style="margin-bottom:15px">Minimum ₹50 | Maximum ₹5000</div>
+   <input id="wdAmount" placeholder="Amount (₹)" type="number" min="50">
+   <button onclick="withdraw()">Request Withdrawal</button>
+   <div id="wdMsg" class="status-msg"></div>
+  </div>
+
+  <div class="card">
+   <h3>📊 Account Stats</h3>
+   <div class="stat-grid">
+    <div class="stat-item">
+     <div class="stat-label">Total Earned</div>
+     <div class="stat-value" id="totalEarned">₹0</div>
+    </div>
+    <div class="stat-item">
+     <div class="stat-label">Withdrawn</div>
+     <div class="stat-value" id="totalWithdrawn">₹0</div>
+    </div>
+   </div>
+  </div>
+
+  <div class="card">
+   <button class="btn-danger" onclick="logout()">🚪 Logout</button>
+  </div>
+ </div>
+
+</div>
+
+<!-- AD MODAL -->
+<div class="ad-modal hide" id="adModal">
+ <div class="ad-box">
+  <div style="font-size:32px;margin-bottom:10px">📺</div>
+  <h3>Watch Video Ad</h3>
+  <div class="small" style="margin:15px 0">Earn ₹0.50 for watching</div>
+  <div class="ad-timer" id="adTimer">30</div>
+  <button onclick="skipAd()" style="margin:0">Skip</button>
+  <button onclick="completeAd()" style="background:var(--green);margin-top:10px">Watch Complete (+₹0.50)</button>
+ </div>
+</div>
+
+<!-- NAV BAR -->
+<div class="nav hide" id="navBar">
+ <div class="active" onclick="navTo('homePage')">🏠 Home</div>
+ <div onclick="navTo('taskPage')">📋 Tasks</div>
+ <div onclick="navTo('sharePage')">🔗 Refer</div>
+ <div onclick="navTo('profilePage')">👤 Profile</div>
+</div>
+
+<script>
+let userPhone = null;
+let adTimer = null;
+
+// ============ AUTH ============
+function showLogin(){
+ registerBox.classList.add('hide');
+ loginBox.classList.remove('hide');
+}
+function showRegister(){
+ loginBox.classList.add('hide');
+ registerBox.classList.remove('hide');
+}
+
+// ============ REGISTER ============
+function register(){
+ let p = rPhone.value.trim();
+ let a = rPass.value;
+ let b = rCPass.value;
+
+ if(p.length !== 10) return alert("❌ Phone must be 10 digits");
+ if(a.length < 4) return alert("❌ Password must be 4+ characters");
+ if(a !== b) return alert("❌ Passwords don't match");
+ 
+ if(window.storage && window.storage.get){
+  // Use persistent storage
+  try{
+   window.storage.get("user_"+p).then(result => {
+    if(result) return alert("❌ User already exists");
+    let user = {
+     phone:p,
+     pass:a,
+     balance:2,
+     tasks:Array(10).fill(false),
+     refCount:0,
+     refEarn:0,
+     shared:false,
+     upi:"",
+     totalEarned:2,
+     totalWithdrawn:0,
+     lastCheckin:null,
+     adsWatched:0,
+     created:new Date().toISOString()
+    };
+    window.storage.set("user_"+p, JSON.stringify(user)).then(() => {
+     alert("✅ Account created! +₹2 bonus");
+     showLogin();
+    });
+   });
+  }catch(e){
+   // Fallback to localStorage
+   localStorage.setItem("user_"+p, JSON.stringify(user));
+   alert("✅ Account created! +₹2 bonus");
+   showLogin();
+  }
+ }else{
+  // Use localStorage
+  if(localStorage.getItem("user_"+p)) return alert("❌ User already exists");
+  let user = {
+   phone:p,
+   pass:a,
+   balance:2,
+   tasks:Array(10).fill(false),
+   refCount:0,
+   refEarn:0,
+   shared:false,
+   upi:"",
+   totalEarned:2,
+   totalWithdrawn:0,
+   lastCheckin:null,
+   adsWatched:0,
+   created:new Date().toISOString()
+  };
+  localStorage.setItem("user_"+p, JSON.stringify(user));
+  alert("✅ Account created! +₹2 bonus");
+  showLogin();
+ }
+}
+
+// ============ LOGIN ============
+function login(){
+ let p = lPhone.value.trim();
+ let a = lPass.value;
+
+ function processLogin(d){
+  if(!d) return alert("❌ User not found");
+  let u = JSON.parse(d);
+  if(u.pass !== a) return alert("❌ Wrong password");
+  userPhone = p;
+  initApp();
+ }
+
+ if(window.storage && window.storage.get){
+  try{
+   window.storage.get("user_"+p).then(result => {
+    processLogin(result ? result.value : null);
+   });
+  }catch(e){
+   processLogin(localStorage.getItem("user_"+p));
+  }
+ }else{
+  processLogin(localStorage.getItem("user_"+p));
+ }
+}
+
+// ============ INIT APP ============
+function initApp(){
+ authBox.classList.add('hide');
+ mainApp.classList.remove('hide');
+ navBar.classList.remove('hide');
+ uPhone.innerText = userPhone;
+ navTo('homePage');
+ render();
+}
+
+// ============ NAVIGATION ============
+function navTo(id){
+ ['homePage','taskPage','sharePage','profilePage'].forEach(p => {
+  document.getElementById(p).classList.add('hide');
+  document.querySelectorAll('.nav div').forEach(d => d.classList.remove('active'));
+ });
+ document.getElementById(id).classList.remove('hide');
+ event.target.classList.add('active');
+}
+
+// ============ DATA ============
+function get(){
+ try{
+  let d = localStorage.getItem("user_"+userPhone);
+  return d ? JSON.parse(d) : null;
+ }catch(e){
+  return null;
+ }
+}
+
+function save(o){
+ localStorage.setItem("user_"+userPhone, JSON.stringify(o));
+ render();
+}
+
+function render(){
+ let o = get();
+ if(!o) return;
+ 
+ bal.innerText = o.balance.toFixed(2);
+ tRef.innerText = o.refCount;
+ tRefE.innerText = '₹' + o.refEarn.toFixed(2);
+ refCode.innerText = "REF" + userPhone.slice(-4);
+ upi.value = o.upi || "";
+ totalEarned.innerText = '₹' + o.totalEarned.toFixed(2);
+ totalWithdrawn.innerText = '₹' + o.totalWithdrawn.toFixed(2);
+ adsWatched.innerText = o.adsWatched || 0;
+ bonusToday.innerText = '₹' + (o.balance.toFixed(2));
+ renderTasks();
+}
+
+// ============ HOME ============
+function checkin(){
+ let o = get();
+ let today = new Date().toDateString();
+ if(o.lastCheckin === today) return alert("✅ Already claimed today");
+ 
+ o.balance += 1;
+ o.totalEarned += 1;
+ o.lastCheckin = today;
+ save(o);
+ showMsg(document.createElement('div'), "✅ +₹1 claimed", "success");
+}
+
+function showAdModal(){
+ adModal.classList.remove('hide');
+ let time = 30;
+ adTimer.innerText = time;
+ 
+ clearInterval(window.adCountdown);
+ window.adCountdown = setInterval(() => {
+  time--;
+  adTimer.innerText = time;
+  if(time <= 0) clearInterval(window.adCountdown);
+ }, 1000);
+}
+
+function skipAd(){
+ clearInterval(window.adCountdown);
+ adModal.classList.add('hide');
+}
+
+function completeAd(){
+ let o = get();
+ o.balance += 0.50;
+ o.totalEarned += 0.50;
+ o.adsWatched = (o.adsWatched || 0) + 1;
+ save(o);
+ 
+ clearInterval(window.adCountdown);
+ adModal.classList.add('hide');
+ 
+ alert("✅ +₹0.50 earned!");
+}
+
+// ============ TASKS ============
+function renderTasks(){
+ let o = get();
+ taskList.innerHTML = "";
+ 
+ const taskData = [
+  "Complete Profile",
+  "Share with 2 Friends",
+  "Watch 5 Ads",
+  "Login 3 Days",
+  "Refer 1 Friend",
+  "Complete Profile",
+  "Watch 10 Videos",
+  "Daily Login",
+  "Share on WhatsApp",
+  "Withdraw ₹100"
+ ];
+ 
+ taskData.forEach((task, i) => {
+  let done = o.tasks[i];
+  taskList.innerHTML += `
+   <div class="task ${done ? 'done' : ''}">
+    <div class="task-info">
+     <div class="task-title">${task}</div>
+     <div class="task-reward">Reward: ₹2</div>
+    </div>
+    <button onclick="claimTask(${i})" ${done ? 'disabled' : ''} style="width:auto;padding:6px 12px;margin:0">
+     ${done ? '✓ Done' : 'Claim'}
+    </button>
+   </div>`;
+ });
+}
+
+function claimTask(i){
+ let o = get();
+ if(o.tasks[i]) return alert("✅ Already completed");
+ 
+ o.tasks[i] = true;
+ o.balance += 2;
+ o.totalEarned += 2;
+ save(o);
+ alert("✅ +₹2 earned!");
+}
+
+// ============ SHARE ============
+function copyCode(){
+ let code = "REF" + userPhone.slice(-4);
+ navigator.clipboard.writeText(code).then(() => {
+  alert("✅ Code copied!");
+ });
+}
+
+function shareApp(){
+ let code = "REF" + userPhone.slice(-4);
+ let text = `Join Earn App & Get ₹2 Bonus! Use code: ${code}. Download now!`;
+ 
+ if(navigator.share){
+  navigator.share({title:"Earn Money App", text:text});
+ }else{
+  alert(text);
+ }
+}
+
+function claimShare(){
+ let o = get();
+ if(o.shared) return alert("✅ Already claimed");
+ 
+ o.shared = true;
+ o.refCount++;
+ o.refEarn += 5;
+ o.balance += 5;
+ o.totalEarned += 5;
+ save(o);
+ 
+ let msg = document.getElementById('shareMsg');
+ msg.innerText = "✅ +₹5 added!";
+ msg.className = "status-msg success";
+ setTimeout(() => msg.className = "status-msg", 3000);
+}
+
+// ============ PROFILE ============
+function saveUpi(){
+ let upiVal = upi.value.trim();
+ if(!upiVal) return alert("❌ Enter UPI ID");
+ if(!upiVal.includes('@')) return alert("❌ Invalid UPI format");
+ 
+ let o = get();
+ o.upi = upiVal;
+ save(o);
+ 
+ let msg = document.getElementById('upiMsg');
+ msg.innerText = "✅ UPI Saved Successfully";
+ msg.className = "status-msg success";
+ setTimeout(() => msg.className = "status-msg", 3000);
+}
+
+function withdraw(){
+ let o = get();
+ let amount = parseFloat(wdAmount.value);
+ 
+ if(!o.upi) {
+  let msg = document.getElementById('wdMsg');
+  msg.innerText = "❌ Add UPI ID first";
+  msg.className = "status-msg error";
+  return;
+ }
+ if(isNaN(amount) || amount < 50) {
+  let msg = document.getElementById('wdMsg');
+  msg.innerText = "❌ Minimum ₹50";
+  msg.className = "status-msg error";
+  return;
+ }
+ if(amount > 5000) {
+  let msg = document.getElementById('wdMsg');
+  msg.innerText = "❌ Maximum ₹5000";
+  msg.className = "status-msg error";
+  return;
+ }
+ if(amount > o.balance) {
+  let msg = document.getElementById('wdMsg');
+  msg.innerText = "❌ Insufficient balance";
+  msg.className = "status-msg error";
+  return;
+ }
+ 
+ o.balance -= amount;
+ o.totalWithdrawn += amount;
+ save(o);
+ wdAmount.value = "";
+ 
+ let msg = document.getElementById('wdMsg');
+ msg.innerText = "✅ Withdrawal requested! You'll receive ₹" + amount + " in 24 hours";
+ msg.className = "status-msg success";
+ setTimeout(() => msg.className = "status-msg", 5000);
+}
+
+// ============ LOGOUT ============
+function logout(){
+ if(confirm("Are you sure you want to logout?")){
+  userPhone = null;
+  authBox.classList.remove('hide');
+  mainApp.classList.add('hide');
+  navBar.classList.add('hide');
+  registerBox.classList.remove('hide');
+  loginBox.classList.add('hide');
+  document.getElementById('lPhone').value = "";
+  document.getElementById('lPass').value = "";
+  alert("✅ Logged out successfully");
+ }
+}
+</script>
+
+</body>
+</html>
