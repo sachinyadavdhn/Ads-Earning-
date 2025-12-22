@@ -1,832 +1,789 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Earn Money App</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-:root{
- --bg:#020617;
- --bg2:#0f172a;
- --glass:rgba(255,255,255,.12);
- --border:rgba(255,255,255,.22);
- --green:#22c55e;
- --accent:#ffb300;
- --text:#fff;
- --muted:#c7d2fe;
- --danger:#ef4444;
-}
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI', Tahoma, sans-serif}
-body{
- min-height:100vh;
- background:radial-gradient(circle at top,#1e3a8a,var(--bg));
- color:var(--text);
- perspective:1200px;
- overflow-x:hidden
-}
-.hide{display:none!important}
-.show{display:block!important}
-
-/* AUTH SCREENS */
-.auth{
- max-width:420px;
- margin:auto;
- padding-top:80px;
- padding-bottom:40px
-}
-
-/* MAIN APP */
-.app{
- max-width:420px;
- margin:auto;
- padding-bottom:120px;
- transform-style:preserve-3d;
-}
-
-/* 3D CARD */
-.card{
- background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.05));
- backdrop-filter:blur(18px);
- border:1px solid var(--border);
- border-radius:22px;
- padding:20px;
- margin:14px;
- box-shadow:0 25px 50px rgba(0,0,0,.7);
- transform:translateZ(18px);
- animation:pop .35s ease
-}
-@keyframes pop{
- from{opacity:0;transform:translateZ(-30px) scale(.95)}
- to{opacity:1;transform:translateZ(18px)}
-}
-
-h2,h3{text-align:center;margin-bottom:15px;font-size:24px}
-h3{font-size:18px}
-
-input{
- width:100%;padding:14px;margin:10px 0;
- border-radius:14px;
- border:1px solid var(--border);
- background:rgba(0,0,0,.4);
- color:#fff;
- font-size:14px;
- transition:.3s
-}
-input:focus{
- outline:none;
- border-color:var(--green);
- background:rgba(0,0,0,.6)
-}
-input::placeholder{color:#999}
-
-button{
- width:100%;padding:14px;margin-top:12px;
- border-radius:16px;
- background:var(--green);
- border:none;
- color:#000;
- font-weight:800;
- font-size:15px;
- cursor:pointer;
- transition:.25s;
- box-shadow:0 4px 15px rgba(34,197,94,.3)
-}
-button:hover:not(:disabled){
- background:#16a34a;
- box-shadow:0 6px 20px rgba(34,197,94,.5)
-}
-button:active:not(:disabled){transform:scale(.96)}
-button:disabled{opacity:.5;cursor:not-allowed}
-
-.btn-accent{background:var(--accent);color:#000}
-.btn-accent:hover:not(:disabled){
- background:#f59e0b;
- box-shadow:0 6px 20px rgba(255,179,0,.5)
-}
-.btn-danger{background:var(--danger);color:#fff}
-.btn-danger:hover:not(:disabled){
- background:#dc2626;
- box-shadow:0 6px 20px rgba(239,68,68,.5)
-}
-
-.note{
- font-size:13px;
- color:var(--muted);
- text-align:center;
- cursor:pointer;
- margin-top:15px;
- transition:.3s
-}
-.note:hover{color:var(--green)}
-
-.row{
- display:flex;
- justify-content:space-between;
- align-items:center;
- margin:10px 0
-}
-.col{flex:1}
-
-.big{
- font-size:42px;
- font-weight:900;
- color:var(--green);
- margin:20px 0;
- text-align:center;
- letter-spacing:-1px
-}
-.small{font-size:12px;color:var(--muted)}
-
-.task{
- display:flex;
- justify-content:space-between;
- align-items:center;
- padding:14px;
- margin:8px 0;
- border-radius:14px;
- border:1px solid var(--border);
- background:rgba(255,255,255,.05);
- transition:.3s
-}
-.task:hover{border-color:var(--green);background:rgba(34,197,94,.1)}
-.task.done{opacity:.5}
-
-.task-info{flex:1}
-.task-title{font-weight:600;margin-bottom:4px}
-.task-reward{font-size:13px;color:var(--green);font-weight:700}
-
-/* HEADER */
-.header{
- background:linear-gradient(135deg,#16a34a,#0ea5e9);
- padding:20px;
- border-bottom-left-radius:22px;
- border-bottom-right-radius:22px;
- box-shadow:0 10px 30px rgba(0,0,0,.3)
-}
-.profile{
- display:flex;
- align-items:center;
- gap:12px
-}
-.avatar{
- width:50px;height:50px;
- border-radius:50%;
- background:#fff;
- color:#16a34a;
- display:flex;
- align-items:center;
- justify-content:center;
- font-weight:900;
- font-size:24px
-}
-.profile-info{flex:1}
-.profile-info .small{color:rgba(255,255,255,.7)}
-.profile-info .note{color:#fff;margin:0}
-
-/* NAV */
-.nav{
- position:fixed;
- bottom:0;
- left:50%;
- transform:translateX(-50%);
- width:100%;
- max-width:420px;
- background:rgba(2,6,23,.98);
- border-top:1px solid var(--border);
- display:flex;
- justify-content:space-around;
- padding:8px 0;
- z-index:100
-}
-.nav div{
- font-size:11px;
- color:#9ca3af;
- cursor:pointer;
- padding:8px;
- flex:1;
- text-align:center;
- transition:.3s;
- user-select:none
-}
-.nav div.active{
- color:var(--green);
- font-weight:800
-}
-
-.status-msg{
- font-size:13px;
- padding:10px;
- border-radius:10px;
- margin-top:10px;
- text-align:center;
- display:none
-}
-.status-msg.success{
- background:rgba(34,197,94,.2);
- color:var(--green);
- display:block
-}
-.status-msg.error{
- background:rgba(239,68,68,.2);
- color:var(--danger);
- display:block
-}
-
-.ad-modal{
- position:fixed;
- top:0;left:0;
- width:100%;height:100%;
- background:rgba(0,0,0,.8);
- display:flex;
- align-items:center;
- justify-content:center;
- z-index:200;
- animation:fadeIn .3s
-}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.ad-box{
- background:var(--bg2);
- border:1px solid var(--border);
- border-radius:20px;
- padding:30px;
- text-align:center;
- max-width:300px
-}
-.ad-timer{
- font-size:32px;
- font-weight:900;
- color:var(--accent);
- margin:20px 0
-}
-
-.stat-grid{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:10px;
- margin:15px 0
-}
-.stat-item{
- background:rgba(255,255,255,.05);
- border:1px solid var(--border);
- border-radius:14px;
- padding:15px;
- text-align:center
-}
-.stat-label{font-size:12px;color:var(--muted);margin-bottom:8px}
-.stat-value{font-size:24px;font-weight:900;color:var(--green)}
-
-@media (max-width:480px){
- .card{margin:10px;padding:16px}
- .big{font-size:36px}
- h2,h3{font-size:20px}
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPIN EARN</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}:root{--orange:#FF6B00;--orange-dark:#E55A00;--white:#FFFFFF;--light:#F5F5F5;--gray:#E8E8E8;--dark:#333;--text:#555}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--light);color:var(--dark);overflow-x:hidden;-webkit-user-select:none;user-select:none}.page{display:none;min-height:100vh;flex-direction:column}.page.active{display:flex}.auth-page{background:linear-gradient(135deg,var(--orange),var(--orange-dark));justify-content:flex-end}.auth-box{background:var(--white);border-radius:30px 30px 0 0;padding:40px 24px;max-height:80vh;overflow-y:auto}.auth-header{text-align:center;margin-bottom:30px}.auth-title{font-size:24px;font-weight:800;margin-bottom:8px}.auth-subtitle{font-size:12px;color:var(--text)}.form-group{margin-bottom:18px}.form-label{display:block;font-size:12px;font-weight:700;margin-bottom:8px;text-transform:uppercase;color:var(--dark)}input{width:100%;padding:14px;border:2px solid var(--gray);border-radius:10px;font-size:15px;color:var(--dark);background:var(--white)}input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,0,0.1)}.btn-auth{width:100%;padding:16px;background:linear-gradient(135deg,var(--orange),var(--orange-dark));color:white;border:none;border-radius:10px;font-weight:800;font-size:16px;cursor:pointer;margin-top:20px;transition:all 0.3s;box-shadow:0 4px 15px rgba(255,107,0,0.3)}.btn-auth:active{transform:scale(0.98)}.form-footer{text-align:center;margin-top:20px;font-size:13px}.form-footer a{color:var(--orange);font-weight:800;cursor:pointer}.bonus-banner{background:linear-gradient(135deg,var(--orange),#FFB84D);color:white;padding:16px;border-radius:12px;text-align:center;font-weight:800;margin-bottom:24px;font-size:14px;box-shadow:0 4px 12px rgba(255,107,0,0.25)}.checkbox-group{display:flex;align-items:center;gap:10px;margin:20px 0}.checkbox-group input{width:20px;height:20px;accent-color:var(--orange)}.checkbox-group label{font-size:12px;color:var(--text);cursor:pointer}.alert{padding:12px;border-radius:10px;margin-bottom:16px;font-size:12px;display:none;background:rgba(255,51,51,0.1);color:#FF3333;border:2px solid #FF3333;animation:shake 0.3s}.alert.show{display:block}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}.app-page{background:var(--light);padding-bottom:100px}.header{background:linear-gradient(135deg,var(--orange),var(--orange-dark));padding:16px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5;color:white;box-shadow:0 4px 15px rgba(0,0,0,0.15)}.header-title{font-size:18px;font-weight:800}.header-btn{width:40px;height:40px;background:rgba(255,255,255,0.2);border:none;color:white;border-radius:50%;cursor:pointer;font-size:18px;transition:all 0.3s;backdrop-filter:blur(10px)}.header-btn:active{background:rgba(255,255,255,0.4);transform:scale(0.95)}.content{flex:1;padding:16px}.dashboard{background:linear-gradient(135deg,var(--orange),var(--orange-dark));padding:24px;border-radius:20px;margin-bottom:20px;color:white;box-shadow:0 8px 25px rgba(0,0,0,0.2);position:relative;overflow:hidden}.dashboard::before{content:'';position:absolute;top:-50%;right:-50%;width:200px;height:200px;background:rgba(255,255,255,0.1);border-radius:50%;animation:float 6s infinite}@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-20px)}}.welcome-text{font-size:16px;font-weight:600;margin-bottom:16px;position:relative;z-index:1}.balance-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;position:relative;z-index:1}.balance-card{background:rgba(255,255,255,0.15);padding:16px;border-radius:12px;text-align:center;border:1px solid rgba(255,255,255,0.2);backdrop-filter:blur(10px);transition:all 0.3s}.balance-card:hover{background:rgba(255,255,255,0.2);transform:translateY(-2px)}.balance-label{font-size:11px;opacity:0.85;margin-bottom:8px}.balance-amount{font-size:24px;font-weight:800}.card{background:white;border:none;padding:20px;border-radius:16px;margin-bottom:16px;box-shadow:0 4px 15px rgba(0,0,0,0.1);transition:all 0.3s}.card:hover{box-shadow:0 8px 25px rgba(0,0,0,0.12)}.card-title{font-weight:800;font-size:16px;margin-bottom:16px;color:var(--dark)}.wheel-container{position:relative;width:280px;height:280px;margin:20px auto;display:flex;align-items:center;justify-content:center}.pointer{position:absolute;top:-15px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:20px solid var(--orange);z-index:10;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3))}.wheel{width:100%;height:100%;transform-origin:center;transition:transform 0s linear}canvas{width:100%;height:100%;display:block}.btn-spin{background:linear-gradient(135deg,var(--orange),var(--orange-dark));color:white;border:none;padding:16px 24px;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer;width:90%;margin:0 auto;display:block;transition:all 0.3s;box-shadow:0 6px 20px rgba(255,107,0,0.3)}.btn-spin:active:not(:disabled){transform:scale(0.93)}.btn-spin:disabled{opacity:0.5;cursor:not-allowed}.spin-balance{text-align:center;color:var(--text);font-size:12px;margin-top:12px;font-weight:600}.spins-available{text-align:center;background:linear-gradient(135deg,rgba(255,107,0,0.1),rgba(255,107,0,0.05));padding:12px;border-radius:8px;margin-top:12px;font-size:13px;font-weight:700;color:var(--orange);border:2px solid var(--orange);animation:pulse 2s infinite}@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}.task-item{background:linear-gradient(135deg,var(--white),#fafafa);border:2px solid var(--gray);padding:14px;border-radius:12px;margin-bottom:12px;cursor:pointer;transition:all 0.3s;display:flex;justify-content:space-between;align-items:center}.task-item:active{border-color:var(--orange);background:var(--light);transform:translateX(4px);box-shadow:0 4px 12px rgba(255,107,0,0.2)}.task-left{flex:1}.task-name{font-weight:700;font-size:14px;margin-bottom:4px;color:var(--dark)}.task-desc{font-size:12px;color:var(--text)}.task-reward{color:var(--orange);font-weight:800;font-size:14px}.btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange-dark));color:white;border:none;padding:14px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;width:100%;margin-bottom:10px;transition:all 0.3s;box-shadow:0 4px 15px rgba(255,107,0,0.2)}.btn-primary:active{transform:scale(0.97)}.quick-amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.amount-btn{background:var(--light);border:2px solid var(--gray);color:var(--dark);padding:12px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;transition:all 0.3s}.amount-btn:active{background:var(--orange);border-color:var(--orange);color:white;transform:scale(0.95)}.qr-section{text-align:center;background:linear-gradient(135deg,var(--light),#f0f0f0);padding:20px;border-radius:16px;margin:16px 0;border:2px solid var(--orange)}.qr-amount{font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px}.qr-container{width:220px;height:220px;margin:0 auto;background:white;border-radius:12px;padding:8px;box-shadow:0 4px 12px rgba(0,0,0,0.1)}.upi-id{font-size:12px;color:var(--text);margin-top:12px;font-weight:600;background:var(--light);padding:8px;border-radius:8px}.transaction-item{background:var(--light);padding:14px;border-radius:12px;margin-bottom:10px;display:flex;gap:12px;align-items:center;border-left:4px solid var(--orange);transition:all 0.3s}.transaction-item:hover{box-shadow:0 2px 8px rgba(0,0,0,0.1)}.transaction-icon{font-size:20px;width:40px;height:40px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}.transaction-info{flex:1}.transaction-title{font-size:13px;font-weight:700;margin-bottom:2px}.transaction-time{font-size:11px;color:var(--text)}.transaction-amount{font-size:14px;font-weight:800;color:var(--orange)}.transaction-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:8px}.status-pending{background:rgba(255,193,7,0.2);color:#FFC107}.status-approved{background:rgba(76,175,80,0.2);color:#4CAF50}.status-rejected{background:rgba(244,67,54,0.2);color:#F44336}.empty-state{text-align:center;padding:40px 20px;color:var(--text)}.empty-icon{font-size:50px;margin-bottom:12px;opacity:0.5}.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:2px solid var(--gray);display:grid;grid-template-columns:repeat(4,1fr);z-index:20;box-shadow:0 -4px 15px rgba(0,0,0,0.1);backdrop-filter:blur(10px)}.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 8px;background:none;border:none;color:var(--text);cursor:pointer;font-size:10px;transition:all 0.3s}.nav-btn.active{color:var(--orange);transform:scale(1.1)}.nav-icon{font-size:22px;margin-bottom:4px}.notification{position:fixed;top:80px;left:16px;right:16px;padding:14px 16px;background:var(--orange);color:white;border-radius:12px;z-index:100;display:none;font-size:13px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,0.2);animation:slideIn 0.4s cubic-bezier(0.34,1.56,0.64,1)}.notification.show{display:block}@keyframes slideIn{from{transform:translateY(-40px);opacity:0}to{transform:translateY(0);opacity:1}}.hidden{display:none}@media (max-width:480px){.quick-amounts{grid-template-columns:repeat(2,1fr)}.wheel-container{width:240px;height:240px}}
+    </style>
 </head>
-
 <body>
-
-<!-- AUTH CONTAINER -->
-<div class="auth" id="authBox">
-
- <!-- REGISTER -->
- <div class="card" id="registerBox">
-  <h2>📱 Create Account</h2>
-  <p style="text-align:center;color:var(--muted);margin-bottom:15px">Get ₹2 Signup Bonus</p>
-  
-  <input id="rPhone" placeholder="Phone Number (10 digits)" maxlength="10" type="tel">
-  <input id="rPass" type="password" placeholder="Password (min 4 chars)">
-  <input id="rCPass" type="password" placeholder="Confirm Password">
-  <input id="rRef" placeholder="Referral Code (optional)">
-  
-  <button onclick="register()">Sign Up Now</button>
-  <div class="note" onclick="showLogin()">Already have account? Login</div>
- </div>
-
- <!-- LOGIN -->
- <div class="card hide" id="loginBox">
-  <h2>🔐 Login</h2>
-  <p style="text-align:center;color:var(--muted);margin-bottom:15px">Welcome Back!</p>
-  
-  <input id="lPhone" placeholder="Phone Number" maxlength="10" type="tel">
-  <input id="lPass" type="password" placeholder="Password">
-  
-  <button onclick="login()">Login</button>
-  <div class="note" onclick="showRegister()">Create new account</div>
- </div>
-
-</div>
-
-<!-- MAIN APP -->
-<div class="app hide" id="mainApp">
-
- <!-- HEADER -->
- <div class="header">
-  <div class="profile">
-   <div class="avatar">👤</div>
-   <div class="profile-info" style="flex:1">
-    <div class="small">Welcome Back</div>
-    <div id="uPhone" style="font-weight:900;font-size:16px"></div>
-   </div>
-  </div>
- </div>
-
- <!-- HOME PAGE -->
- <div id="homePage">
-  <div class="card">
-   <div class="small" style="text-align:center">💰 Total Balance</div>
-   <div class="big">₹ <span id="bal">0</span></div>
-  </div>
-
-  <div class="card">
-   <div class="row">
-    <div>
-     <div class="small">Daily Check-in</div>
-     <div style="font-weight:600;margin-top:5px">Earn ₹1 Daily</div>
+    <!-- LOGIN PAGE -->
+    <div class="page active" id="loginPage" style="background:linear-gradient(135deg,var(--orange),var(--orange-dark))">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;padding:20px">
+            <div style="font-size:70px;margin-bottom:20px;animation:bounce 2s infinite">⭐</div>
+            <div style="font-size:32px;font-weight:800;text-align:center;margin-bottom:10px">INFO SPIN EARN</div>
+            <div style="font-size:14px;opacity:0.9">🎯 Win Real Money • Fast Withdrawals</div>
+        </div>
+        <div class="auth-box">
+            <div class="auth-header">
+                <div class="auth-title">Login Account</div>
+                <div class="auth-subtitle">Continue your journey</div>
+            </div>
+            <div class="alert" id="loginErr"></div>
+            <div class="form-group">
+                <label class="form-label">📧 Email</label>
+                <input type="email" id="logEmail" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label">🔐 Password</label>
+                <input type="password" id="logPass" placeholder="••••••••">
+            </div>
+            <button class="btn-auth" onclick="login()">LOGIN NOW</button>
+            <div class="form-footer">New here? <a onclick="toSignup()">Sign Up Free 🎁</a></div>
+        </div>
     </div>
-    <button onclick="checkin()" style="width:auto;padding:8px 16px;margin:0">Claim</button>
-   </div>
-  </div>
 
-  <div class="card">
-   <div class="row">
-    <div>
-     <div class="small">Watch Video Ad</div>
-     <div style="font-weight:600;margin-top:5px">Earn ₹0.50</div>
+    <!-- SIGNUP PAGE -->
+    <div class="page" id="signupPage" style="background:linear-gradient(135deg,var(--orange),var(--orange-dark))">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;padding:20px">
+            <div style="font-size:70px;margin-bottom:20px">🎁</div>
+            <div style="font-size:32px;font-weight:800;text-align:center;margin-bottom:10px">₹50 FREE</div>
+            <div style="font-size:14px;opacity:0.9">+ 5 Free Spins Instantly</div>
+        </div>
+        <div class="auth-box">
+            <div class="auth-header">
+                <div class="auth-title">Create Your Account</div>
+                <div class="auth-subtitle">Get ₹50 + 5 free spins</div>
+            </div>
+            <div class="bonus-banner">🎁 INSTANT ₹50 + 5 FREE SPINS</div>
+            <div class="alert" id="signErr"></div>
+            <div class="form-group">
+                <label class="form-label">👤 Full Name</label>
+                <input type="text" id="sigName" placeholder="John Doe">
+            </div>
+            <div class="form-group">
+                <label class="form-label">📧 Email</label>
+                <input type="email" id="sigEmail" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label">🔐 Password (8+ chars)</label>
+                <input type="password" id="sigPass" placeholder="••••••••">
+            </div>
+            <div class="form-group">
+                <label class="form-label">✓ Confirm Password</label>
+                <input type="password" id="sigConf" placeholder="••••••••">
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="agr">
+                <label for="agr">I agree to Terms & Conditions</label>
+            </div>
+            <button class="btn-auth" onclick="signup()">GET ₹50 BONUS</button>
+            <div class="form-footer">Already have account? <a onclick="toLogin()">Login Here</a></div>
+        </div>
     </div>
-    <button onclick="showAdModal()" style="width:auto;padding:8px 16px;margin:0">Watch</button>
-   </div>
-  </div>
 
-  <div class="card">
-   <h3>⚡ Quick Earn</h3>
-   <div class="stat-grid">
-    <div class="stat-item">
-     <div class="stat-label">Daily Bonus</div>
-     <div class="stat-value" id="bonusToday">₹0</div>
+    <!-- HOME PAGE -->
+    <div class="page app-page" id="homePage">
+        <div class="header">
+            <div class="header-title">🏠 Home</div>
+            <button class="header-btn" onclick="goProf()">👤</button>
+        </div>
+        <div class="content">
+            <div class="dashboard">
+                <div class="welcome-text">Welcome, <span id="uName">User</span>! 👋</div>
+                <div class="balance-grid">
+                    <div class="balance-card">
+                        <div class="balance-label">💳 Deposit Balance</div>
+                        <div class="balance-amount">₹<span id="depBal">0</span></div>
+                    </div>
+                    <div class="balance-card">
+                        <div class="balance-label">🏆 Winnings</div>
+                        <div class="balance-amount">₹<span id="winBal">0</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">🎡 Spin The Wheel - Win Big!</div>
+                <div style="text-align:center;color:var(--text);margin-bottom:12px;font-size:12px">💰 Cost: ₹10 | 🎯 Win: ₹50-₹500</div>
+                <div style="text-align:center">
+                    <div class="wheel-container">
+                        <div class="pointer"></div>
+                        <div class="wheel"><canvas id="wheel" width="280" height="280"></canvas></div>
+                    </div>
+                    <button class="btn-spin" id="spinBtn" onclick="spin()">⭐ SPIN NOW ⭐</button>
+                    <div class="spin-balance">Available: ₹<span id="spinBal">0</span></div>
+                    <div class="spins-available" id="freeSpins">FREE SPINS: 5</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">📊 Recent Activity</div>
+                <div id="actList">
+                    <div class="empty-state"><div class="empty-icon">📭</div><p>No activity yet</p></div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="stat-item">
-     <div class="stat-label">Ads Watched</div>
-     <div class="stat-value" id="adsWatched">0</div>
+
+    <!-- EARN PAGE -->
+    <div class="page app-page" id="earnPage">
+        <div class="header"><div class="header-title">💸 Earn Tasks</div></div>
+        <div class="content">
+            <div class="card">
+                <div class="card-title">Complete Tasks & Earn 💰</div>
+                <div class="task-item" onclick="doTask('survey',50)">
+                    <div class="task-left">
+                        <div class="task-name">📝 Complete Survey</div>
+                        <div class="task-desc">Answer 5 quick questions</div>
+                    </div>
+                    <div class="task-reward">+₹50</div>
+                </div>
+                <div class="task-item" onclick="doTask('video',30)">
+                    <div class="task-left">
+                        <div class="task-name">🎥 Watch Video</div>
+                        <div class="task-desc">Watch 2 min video</div>
+                    </div>
+                    <div class="task-reward">+₹30</div>
+                </div>
+                <div class="task-item" onclick="doTask('app',20)">
+                    <div class="task-left">
+                        <div class="task-name">📱 Download App</div>
+                        <div class="task-desc">Install & rate app</div>
+                    </div>
+                    <div class="task-reward">+₹20</div>
+                </div>
+                <div class="task-item" onclick="doTask('signup',100)">
+                    <div class="task-left">
+                        <div class="task-name">✍️ Sign Up</div>
+                        <div class="task-desc">Register on website</div>
+                    </div>
+                    <div class="task-reward">+₹100</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">✅ Completed Tasks</div>
+                <div id="doneList"><div class="empty-state"><div class="empty-icon">📭</div><p>No tasks completed</p></div></div>
+            </div>
+        </div>
     </div>
-   </div>
-  </div>
- </div>
 
- <!-- TASKS PAGE -->
- <div id="taskPage" class="hide">
-  <div class="card">
-   <h3>📋 Available Tasks</h3>
-   <div class="small" style="margin-bottom:15px">Complete tasks to earn ₹2 each</div>
-   <div id="taskList"></div>
-  </div>
- </div>
+    <!-- WALLET PAGE -->
+    <div class="page app-page" id="walletPage">
+        <div class="header"><div class="header-title">💳 Wallet</div></div>
+        <div class="content">
+            <div class="card">
+                <div class="card-title">💰 Account Balances</div>
+                <div class="quick-amounts" style="margin:0">
+                    <div class="amount-btn" style="background:var(--light);border:none;cursor:default;text-align:center">
+                        <div style="font-size:11px;color:var(--text)">DEPOSITS</div>
+                        <div style="font-size:18px;font-weight:800;color:var(--orange)">₹<span id="wlDep">0</span></div>
+                    </div>
+                    <div class="amount-btn" style="background:var(--light);border:none;cursor:default;text-align:center">
+                        <div style="font-size:11px;color:var(--text)">WINNINGS</div>
+                        <div style="font-size:18px;font-weight:800;color:var(--orange)">₹<span id="wlWin">0</span></div>
+                    </div>
+                    <div class="amount-btn" style="background:var(--light);border:none;cursor:default;text-align:center">
+                        <div style="font-size:11px;color:var(--text)">TOTAL</div>
+                        <div style="font-size:18px;font-weight:800;color:var(--orange)">₹<span id="wlTot">0</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">Quick Actions</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <button class="btn-primary" onclick="showDep()" style="background:linear-gradient(135deg,#00C853,#00AA00)">➕ Add Money</button>
+                    <button class="btn-primary" onclick="showWith()">💸 Withdraw</button>
+                </div>
+            </div>
 
- <!-- SHARE PAGE -->
- <div id="sharePage" class="hide">
-  <div class="card">
-   <h3>🔗 Referral Program</h3>
-   <div class="stat-grid">
-    <div class="stat-item">
-     <div class="stat-label">Total Refers</div>
-     <div class="stat-value" id="tRef">0</div>
+            <!-- DEPOSIT FORM -->
+            <div id="depForm" class="card hidden">
+                <div class="card-title">➕ Deposit Money</div>
+                <div class="alert" id="depErr"></div>
+                <p style="font-size:11px;color:var(--text);margin-bottom:12px;text-align:center">Min: ₹100 | Max: ₹100,000</p>
+                <div class="quick-amounts">
+                    <button class="amount-btn" onclick="setDep(100)">₹100</button>
+                    <button class="amount-btn" onclick="setDep(500)">₹500</button>
+                    <button class="amount-btn" onclick="setDep(1000)">₹1K</button>
+                    <button class="amount-btn" onclick="setDep(5000)">₹5K</button>
+                    <button class="amount-btn" onclick="setDep(10000)">₹10K</button>
+                    <button class="amount-btn" onclick="setDep(50000)">₹50K</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Custom Amount</label>
+                    <input type="number" id="depAmt" placeholder="Enter amount" min="100">
+                </div>
+                <button class="btn-primary" id="depBtn" onclick="procDep()" style="background:linear-gradient(135deg,#00C853,#00AA00)">💳 NEXT</button>
+            </div>
+
+            <!-- PAYMENT GATEWAY -->
+              <div id="paymentForm" class="card hidden">
+                <div class="card-title">💳 Complete Payment</div>
+                <div class="qr-section">
+                    <div class="qr-amount">Pay Amount: ₹<span id="payAmount">0</span></div>
+                    <div class="qr-container">
+                        <img src="https://i.ibb.co/Mk0XYwrf/Screenshot-2025-12-22-134818.png" style=" height: 200px;" ></a>
+                    </div>
+                    <div class="upi-id">UPI: shivamyadavmil@fbl</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">📱 UTR Number</label>
+                    <input type="text" id="utrNumber" placeholder="Enter UTR from payment" style="width:100%;padding:12px;border:2px solid var(--gray);border-radius:8px;font-size:14px">
+                </div>
+                <button class="btn-primary" onclick="submitUTR()" style="background:linear-gradient(135deg,#00C853,#00AA00)">✓ SUBMIT UTR</button>
+                <button class="btn-primary" style="background:var(--gray);color:var(--dark);margin-top:8px" onclick="cancelPayment()">CANCEL</button>
+            </div>
+
+            <!-- WITHDRAWAL FORM -->
+            <div id="withForm" class="card hidden">
+                <div class="card-title">💸 Withdraw Winnings</div>
+                <div class="alert" id="withErr"></div>
+                <p style="font-size:11px;color:var(--text);margin-bottom:12px;text-align:center">Min: ₹300 | Direct to Bank</p>
+                <div class="quick-amounts">
+                    <button class="amount-btn" onclick="setWith(300)">₹300</button>
+                    <button class="amount-btn" onclick="setWith(500)">₹500</button>
+                    <button class="amount-btn" onclick="setWith(1000)">₹1K</button>
+                    <button class="amount-btn" onclick="setWith(5000)">₹5K</button>
+                    <button class="amount-btn" onclick="setWith(10000)">₹10K</button>
+                    <button class="amount-btn" onclick="setWith(50000)">₹50K</button>
+                </div>
+                <div id="withLock" class="hidden" style="background:rgba(255,51,51,0.1);border:2px solid #FF3333;color:#FF3333;padding:12px;border-radius:8px;font-size:12px;margin-bottom:16px">
+                    ⓘ Make a deposit of ₹100 first | <a onclick="showDep()" style="color:var(--orange);text-decoration:none;font-weight:700;cursor:pointer">Add Money →</a>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="number" id="withAmt" placeholder="Min ₹300" min="300">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Account Number</label>
+                    <input type="text" id="accNum" placeholder="Account number">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">IFSC Code</label>
+                    <input type="text" id="ifsc" placeholder="e.g., SBIN0001234">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Account Holder Name</label>
+                    <input type="text" id="accName" placeholder="Name as per bank">
+                </div>
+                <button class="btn-primary" onclick="procWith()" style="background:linear-gradient(135deg,#FF5722,#D84315)">🏦 REQUEST WITHDRAWAL</button>
+            </div>
+
+            <!-- TRANSACTION HISTORY -->
+            <div class="card">
+                <div class="card-title">📜 Transaction History</div>
+                <div id="transList"><div class="empty-state"><div class="empty-icon">📭</div><p>No transactions</p></div></div>
+            </div>
+        </div>
     </div>
-    <div class="stat-item">
-     <div class="stat-label">Refer Earning</div>
-     <div class="stat-value" id="tRefE">₹0</div>
+
+    <!-- PROFILE PAGE -->
+    <div class="page app-page" id="profPage">
+        <div class="header"><div class="header-title">👤 Profile</div></div>
+        <div class="content">
+            <div class="card">
+                <div style="text-align:center;margin-bottom:24px">
+                    <div style="width:80px;height:80px;background:linear-gradient(135deg,var(--orange),var(--orange-dark));border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:36px;color:white">👤</div>
+                    <div style="font-size:18px;font-weight:800;margin-bottom:4px" id="pName">User Name</div>
+                    <div style="font-size:12px;color:var(--text)" id="pEmail">user@email.com</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">📋 Account Details</div>
+                <div class="transaction-item">
+                    <div class="transaction-icon">🆔</div>
+                    <div><div style="font-size:11px;color:var(--text);font-weight:600">USER ID</div><div style="font-size:13px;font-weight:700;color:var(--dark)" id="pId">ID-001</div></div>
+                </div>
+                <div class="transaction-item">
+                    <div class="transaction-icon">📅</div>
+                    <div><div style="font-size:11px;color:var(--text);font-weight:600">MEMBER SINCE</div><div style="font-size:13px;font-weight:700;color:var(--dark)" id="pDate">Today</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">📊 My Statistics</div>
+                <div class="quick-amounts">
+                    <div class="amount-btn" style="background:var(--light);border:none;cursor:default">
+                        <div style="font-size:10px;color:var(--text);font-weight:600">SPINS</div>
+                        <div style="font-size:20px;font-weight:800;color:var(--orange)" id="pSpins">0</div>
+                    </div>
+                    <div class="amount-btn" style="background:var(--light);border:none;cursor:default">
+                        <div style="font-size:10px;color:var(--text);font-weight:600">TASKS</div>
+                        <div style="font-size:20px;font-weight:800;color:var(--orange)" id="pTasks">0</div>
+                    </div>
+                    <div class="amount-btn" style="background:var(--light);border:none;cursor:default">
+                        <div style="font-size:10px;color:var(--text);font-weight:600">EARNED</div>
+                        <div style="font-size:20px;font-weight:800;color:var(--orange)">₹<span id="pEarn">0</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div style="display:grid;gap:10px">
+                    <button class="btn-primary" style="background:linear-gradient(135deg,#667eea,#764ba2)">❓ Help & Support</button>
+                    <button class="btn-primary" style="background:linear-gradient(135deg,#FF3333,#CC0000)" onclick="logout()">🚪 Logout</button>
+                </div>
+            </div>
+        </div>
     </div>
-   </div>
-  </div>
 
-  <div class="card">
-   <div class="small">Your Referral Code</div>
-   <div id="refCode" style="font-weight:900;font-size:20px;text-align:center;color:var(--accent);margin:15px 0;padding:12px;border:2px dashed var(--border);border-radius:10px"></div>
-   
-   <button class="btn-accent" onclick="copyCode()">📋 Copy Code</button>
-   <button onclick="shareApp()">📤 Share App</button>
-   <button onclick="claimShare()" style="margin-top:10px">✓ I Shared (+₹5)</button>
-   <div id="shareMsg" class="status-msg"></div>
-  </div>
-
-  <div class="card">
-   <h3>How It Works</h3>
-   <div style="font-size:13px;color:var(--muted);line-height:1.8">
-    ✓ Share your code<br>
-    ✓ Your friend registers<br>
-    ✓ Earn ₹5 per referral<br>
-    ✓ Extra bonus on withdrawal
-   </div>
-  </div>
- </div>
-
- <!-- PROFILE PAGE -->
- <div id="profilePage" class="hide">
-  <div class="card">
-   <h3>💳 Payment Details</h3>
-   <input id="upi" placeholder="Enter UPI ID (e.g. name@okhdfcbank)">
-   <button onclick="saveUpi()">Save UPI</button>
-   <div id="upiMsg" class="status-msg"></div>
-  </div>
-
-  <div class="card">
-   <h3>💸 Withdraw Money</h3>
-   <div class="small" style="margin-bottom:15px">Minimum ₹50 | Maximum ₹5000</div>
-   <input id="wdAmount" placeholder="Amount (₹)" type="number" min="50">
-   <button onclick="withdraw()">Request Withdrawal</button>
-   <div id="wdMsg" class="status-msg"></div>
-  </div>
-
-  <div class="card">
-   <h3>📊 Account Stats</h3>
-   <div class="stat-grid">
-    <div class="stat-item">
-     <div class="stat-label">Total Earned</div>
-     <div class="stat-value" id="totalEarned">₹0</div>
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav">
+        <button class="nav-btn active" onclick="nav('home')"><div class="nav-icon">🏠</div>Home</button>
+        <button class="nav-btn" onclick="nav('earn')"><div class="nav-icon">💸</div>Earn</button>
+        <button class="nav-btn" onclick="nav('wallet')"><div class="nav-icon">💳</div>Wallet</button>
+        <button class="nav-btn" onclick="nav('prof')"><div class="nav-icon">👤</div>Profile</button>
     </div>
-    <div class="stat-item">
-     <div class="stat-label">Withdrawn</div>
-     <div class="stat-value" id="totalWithdrawn">₹0</div>
-    </div>
-   </div>
-  </div>
 
-  <div class="card">
-   <button class="btn-danger" onclick="logout()">🚪 Logout</button>
-  </div>
- </div>
+    <!-- NOTIFICATION -->
+    <div class="notification" id="notif"></div>
 
-</div>
+    <style>
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
 
-<!-- AD MODAL -->
-<div class="ad-modal hide" id="adModal">
- <div class="ad-box">
-  <div style="font-size:32px;margin-bottom:10px">📺</div>
-  <h3>Watch Video Ad</h3>
-  <div class="small" style="margin:15px 0">Earn ₹0.50 for watching</div>
-  <div class="ad-timer" id="adTimer">30</div>
-  <button onclick="skipAd()" style="margin:0">Skip</button>
-  <button onclick="completeAd()" style="background:var(--green);margin-top:10px">Watch Complete (+₹0.50)</button>
- </div>
-</div>
+    <script>
+        const u = {
+            name: null, email: null, id: null, logged: false,
+            dep: 0, win: 0, tranList: [], taskList: [], pending: [],
+            spins: 0, freeSpins: 5, tasks: 0, totalEarn: 0, created: null
+        };
 
-<!-- NAV BAR -->
-<div class="nav hide" id="navBar">
- <div class="active" onclick="navTo('homePage')">🏠 Home</div>
- <div onclick="navTo('taskPage')">📋 Tasks</div>
- <div onclick="navTo('sharePage')">🔗 Refer</div>
- <div onclick="navTo('profilePage')">👤 Profile</div>
-</div>
+        function save() { 
+            try { localStorage.setItem('u', JSON.stringify(u)); } catch(e) {}
+        }
 
-<script>
-let userPhone = null;
-let adTimer = null;
+        function load() { 
+            try { const d = localStorage.getItem('u'); if(d) Object.assign(u, JSON.parse(d)); } catch(e) {}
+        }
 
-// ============ AUTH ============
-function showLogin(){
- registerBox.classList.add('hide');
- loginBox.classList.remove('hide');
-}
-function showRegister(){
- loginBox.classList.add('hide');
- registerBox.classList.remove('hide');
-}
+        function toSignup() {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('signupPage').classList.add('active');
+        }
 
-// ============ REGISTER ============
-function register(){
- let p = rPhone.value.trim();
- let a = rPass.value;
- let b = rCPass.value;
+        function toLogin() {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('loginPage').classList.add('active');
+        }
 
- if(p.length !== 10) return alert("❌ Phone must be 10 digits");
- if(a.length < 4) return alert("❌ Password must be 4+ characters");
- if(a !== b) return alert("❌ Passwords don't match");
- 
- if(window.storage && window.storage.get){
-  // Use persistent storage
-  try{
-   window.storage.get("user_"+p).then(result => {
-    if(result) return alert("❌ User already exists");
-    let user = {
-     phone:p,
-     pass:a,
-     balance:2,
-     tasks:Array(10).fill(false),
-     refCount:0,
-     refEarn:0,
-     shared:false,
-     upi:"",
-     totalEarned:2,
-     totalWithdrawn:0,
-     lastCheckin:null,
-     adsWatched:0,
-     created:new Date().toISOString()
-    };
-    window.storage.set("user_"+p, JSON.stringify(user)).then(() => {
-     alert("✅ Account created! +₹2 bonus");
-     showLogin();
-    });
-   });
-  }catch(e){
-   // Fallback to localStorage
-   localStorage.setItem("user_"+p, JSON.stringify(user));
-   alert("✅ Account created! +₹2 bonus");
-   showLogin();
-  }
- }else{
-  // Use localStorage
-  if(localStorage.getItem("user_"+p)) return alert("❌ User already exists");
-  let user = {
-   phone:p,
-   pass:a,
-   balance:2,
-   tasks:Array(10).fill(false),
-   refCount:0,
-   refEarn:0,
-   shared:false,
-   upi:"",
-   totalEarned:2,
-   totalWithdrawn:0,
-   lastCheckin:null,
-   adsWatched:0,
-   created:new Date().toISOString()
-  };
-  localStorage.setItem("user_"+p, JSON.stringify(user));
-  alert("✅ Account created! +₹2 bonus");
-  showLogin();
- }
-}
+        function login() {
+            const e = document.getElementById('logEmail').value.trim();
+            const p = document.getElementById('logPass').value.trim();
+            const err = document.getElementById('loginErr');
+            
+            if (!e || !p) {
+                err.textContent = '❌ Fill all fields';
+                err.classList.add('show');
+                setTimeout(() => err.classList.remove('show'), 3000);
+                return;
+            }
+            
+            u.logged = true;
+            u.name = e.split('@')[0];
+            u.email = e;
+            save();
+            notify('✅ Login successful!');
+            setTimeout(() => goHome(), 500);
+        }
 
-// ============ LOGIN ============
-function login(){
- let p = lPhone.value.trim();
- let a = lPass.value;
+        function signup() {
+            const n = document.getElementById('sigName').value.trim();
+            const e = document.getElementById('sigEmail').value.trim();
+            const p = document.getElementById('sigPass').value.trim();
+            const c = document.getElementById('sigConf').value.trim();
+            const a = document.getElementById('agr').checked;
+            const err = document.getElementById('signErr');
 
- function processLogin(d){
-  if(!d) return alert("❌ User not found");
-  let u = JSON.parse(d);
-  if(u.pass !== a) return alert("❌ Wrong password");
-  userPhone = p;
-  initApp();
- }
+            if (!n || !e || !p || !c) {
+                err.textContent = '❌ Fill all fields';
+                err.classList.add('show');
+                setTimeout(() => err.classList.remove('show'), 3000);
+                return;
+            }
+            if (p.length < 8) {
+                err.textContent = '❌ Password min 8 characters';
+                err.classList.add('show');
+                setTimeout(() => err.classList.remove('show'), 3000);
+                return;
+            }
+            if (p !== c) {
+                err.textContent = '❌ Passwords do not match';
+                err.classList.add('show');
+                setTimeout(() => err.classList.remove('show'), 3000);
+                return;
+            }
+            if (!a) {
+                err.textContent = '❌ Please agree to terms';
+                err.classList.add('show');
+                setTimeout(() => err.classList.remove('show'), 3000);
+                return;
+            }
 
- if(window.storage && window.storage.get){
-  try{
-   window.storage.get("user_"+p).then(result => {
-    processLogin(result ? result.value : null);
-   });
-  }catch(e){
-   processLogin(localStorage.getItem("user_"+p));
-  }
- }else{
-  processLogin(localStorage.getItem("user_"+p));
- }
-}
+            u.logged = true;
+            u.name = n;
+            u.email = e;
+            u.id = 'ID-' + Math.random().toString().substr(2, 6);
+            u.created = new Date().toLocaleDateString();
+            u.win = 50;
+            u.freeSpins = 5;
+            u.totalEarn = 50;
+            u.spins = 0;
+            u.tranList.push({ type: 'Bonus', amt: 50, icon: '🎁', time: new Date().toLocaleTimeString(), status: 'approved' });
+            save();
+            notify('🎉 Welcome! ₹50 + 5 free spins added!');
+            setTimeout(() => goHome(), 500);
+        }
 
-// ============ INIT APP ============
-function initApp(){
- authBox.classList.add('hide');
- mainApp.classList.remove('hide');
- navBar.classList.remove('hide');
- uPhone.innerText = userPhone;
- navTo('homePage');
- render();
-}
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                u.logged = false;
+                save();
+                toLogin();
+            }
+        }
 
-// ============ NAVIGATION ============
-function navTo(id){
- ['homePage','taskPage','sharePage','profilePage'].forEach(p => {
-  document.getElementById(p).classList.add('hide');
-  document.querySelectorAll('.nav div').forEach(d => d.classList.remove('active'));
- });
- document.getElementById(id).classList.remove('hide');
- event.target.classList.add('active');
-}
+        function goHome() {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('homePage').classList.add('active');
+            updateAll();
+        }
 
-// ============ DATA ============
-function get(){
- try{
-  let d = localStorage.getItem("user_"+userPhone);
-  return d ? JSON.parse(d) : null;
- }catch(e){
-  return null;
- }
-}
+        function goProf() { nav('prof'); }
 
-function save(o){
- localStorage.setItem("user_"+userPhone, JSON.stringify(o));
- render();
-}
+        function nav(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(page + 'Page').classList.add('active');
+            const btn = document.querySelector('.nav-btn[onclick*="' + page + '"]');
+            if(btn) btn.classList.add('active');
+            updateAll();
+        }
 
-function render(){
- let o = get();
- if(!o) return;
- 
- bal.innerText = o.balance.toFixed(2);
- tRef.innerText = o.refCount;
- tRefE.innerText = '₹' + o.refEarn.toFixed(2);
- refCode.innerText = "REF" + userPhone.slice(-4);
- upi.value = o.upi || "";
- totalEarned.innerText = '₹' + o.totalEarned.toFixed(2);
- totalWithdrawn.innerText = '₹' + o.totalWithdrawn.toFixed(2);
- adsWatched.innerText = o.adsWatched || 0;
- bonusToday.innerText = '₹' + (o.balance.toFixed(2));
- renderTasks();
-}
+        function spin() {
+            const btn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel').parentElement;
+            
+            if (btn.disabled) return;
+            if (u.freeSpins <= 0 && u.dep < 10) {
+                notify('❌ Need ₹10! Current: ₹' + u.dep);
+                return;
+            }
 
-// ============ HOME ============
-function checkin(){
- let o = get();
- let today = new Date().toDateString();
- if(o.lastCheckin === today) return alert("✅ Already claimed today");
- 
- o.balance += 1;
- o.totalEarned += 1;
- o.lastCheckin = today;
- save(o);
- showMsg(document.createElement('div'), "✅ +₹1 claimed", "success");
-}
+            btn.disabled = true;
+            if (u.freeSpins > 0) {
+                u.freeSpins--;
+            } else {
+                u.dep -= 10;
+            }
+            u.spins++;
 
-function showAdModal(){
- adModal.classList.remove('hide');
- let time = 30;
- adTimer.innerText = time;
- 
- clearInterval(window.adCountdown);
- window.adCountdown = setInterval(() => {
-  time--;
-  adTimer.innerText = time;
-  if(time <= 0) clearInterval(window.adCountdown);
- }, 1000);
-}
+            const rotation = Math.random() * 360 + 1440;
+            wheel.style.transform = `rotate(${rotation}deg)`;
 
-function skipAd(){
- clearInterval(window.adCountdown);
- adModal.classList.add('hide');
-}
+            setTimeout(() => {
+                const won = Math.random() < 0.3;
+                if (won) {
+                    const prizes = [50, 100, 500, 200, 150, 75, 300, 250];
+                    const prize = prizes[Math.floor(Math.random() * prizes.length)];
+                    u.win += prize;
+                    u.totalEarn += prize;
+                    u.tranList.unshift({ type: 'Won', amt: prize, icon: '🎉', time: new Date().toLocaleTimeString(), status: 'approved' });
+                    notify('🎉 CONGRATULATIONS! You won ₹' + prize);
+                } else {
+                    notify('😢 Try again! Better luck next time');
+                }
+                save();
+                updateAll();
+                btn.disabled = false;
+            }, 3000);
+        }
 
-function completeAd(){
- let o = get();
- o.balance += 0.50;
- o.totalEarned += 0.50;
- o.adsWatched = (o.adsWatched || 0) + 1;
- save(o);
- 
- clearInterval(window.adCountdown);
- adModal.classList.add('hide');
- 
- alert("✅ +₹0.50 earned!");
-}
+        function doTask(t, a) {
+            u.win += a;
+            u.totalEarn += a;
+            u.tasks++;
+            const names = { survey: '📝 Survey', video: '🎥 Video', app: '📱 App', signup: '✍️ Signup' };
+            u.taskList.unshift({ name: names[t], amt: a, time: new Date().toLocaleTimeString() });
+            u.tranList.unshift({ type: 'Task', amt: a, icon: '✅', time: new Date().toLocaleTimeString(), status: 'approved' });
+            save();
+            updateAll();
+            notify('✅ Task completed! +₹' + a);
+            setTimeout(() => nav('home'), 500);
+        }
 
-// ============ TASKS ============
-function renderTasks(){
- let o = get();
- taskList.innerHTML = "";
- 
- const taskData = [
-  "Complete Profile",
-  "Share with 2 Friends",
-  "Watch 5 Ads",
-  "Login 3 Days",
-  "Refer 1 Friend",
-  "Complete Profile",
-  "Watch 10 Videos",
-  "Daily Login",
-  "Share on WhatsApp",
-  "Withdraw ₹100"
- ];
- 
- taskData.forEach((task, i) => {
-  let done = o.tasks[i];
-  taskList.innerHTML += `
-   <div class="task ${done ? 'done' : ''}">
-    <div class="task-info">
-     <div class="task-title">${task}</div>
-     <div class="task-reward">Reward: ₹2</div>
-    </div>
-    <button onclick="claimTask(${i})" ${done ? 'disabled' : ''} style="width:auto;padding:6px 12px;margin:0">
-     ${done ? '✓ Done' : 'Claim'}
-    </button>
-   </div>`;
- });
-}
+        function showDep() {
+            document.getElementById('paymentForm').classList.add('hidden');
+            document.getElementById('depForm').classList.remove('hidden');
+            document.getElementById('withForm').classList.add('hidden');
+        }
 
-function claimTask(i){
- let o = get();
- if(o.tasks[i]) return alert("✅ Already completed");
- 
- o.tasks[i] = true;
- o.balance += 2;
- o.totalEarned += 2;
- save(o);
- alert("✅ +₹2 earned!");
-}
+        function showWith() {
+            if (u.dep === 0) {
+                document.getElementById('withLock').classList.remove('hidden');
+            } else {
+                document.getElementById('withLock').classList.add('hidden');
+            }
+            document.getElementById('withForm').classList.remove('hidden');
+            document.getElementById('depForm').classList.add('hidden');
+            document.getElementById('paymentForm').classList.add('hidden');
+        }
 
-// ============ SHARE ============
-function copyCode(){
- let code = "REF" + userPhone.slice(-4);
- navigator.clipboard.writeText(code).then(() => {
-  alert("✅ Code copied!");
- });
-}
+        function setDep(a) { document.getElementById('depAmt').value = a; }
+        function setWith(a) { document.getElementById('withAmt').value = a; }
 
-function shareApp(){
- let code = "REF" + userPhone.slice(-4);
- let text = `Join Earn App & Get ₹2 Bonus! Use code: ${code}. Download now!`;
- 
- if(navigator.share){
-  navigator.share({title:"Earn Money App", text:text});
- }else{
-  alert(text);
- }
-}
+        function procDep() {
+            const a = parseInt(document.getElementById('depAmt').value) || 0;
+            const err = document.getElementById('depErr');
+            
+            if (a < 100) {
+                err.textContent = '❌ Minimum deposit is ₹100';
+                err.classList.add('show');
+                setTimeout(() => err.classList.remove('show'), 3000);
+                return;
+            }
+            
+            document.getElementById('payAmount').textContent = a;
+            document.getElementById('depForm').classList.add('hidden');
+            document.getElementById('paymentForm').classList.remove('hidden');
+            generateQR('shivamyadavmil@fbl', a);
+        }
 
-function claimShare(){
- let o = get();
- if(o.shared) return alert("✅ Already claimed");
- 
- o.shared = true;
- o.refCount++;
- o.refEarn += 5;
- o.balance += 5;
- o.totalEarned += 5;
- save(o);
- 
- let msg = document.getElementById('shareMsg');
- msg.innerText = "✅ +₹5 added!";
- msg.className = "status-msg success";
- setTimeout(() => msg.className = "status-msg", 3000);
-}
+        function generateQR(upi, amount) {
+            const c = document.getElementById('qrCode');
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, 204, 204);
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('UPI QR', 102, 80);
+            ctx.font = '14px Arial';
+            ctx.fillText('₹' + amount, 102, 110);
+        }
 
-// ============ PROFILE ============
-function saveUpi(){
- let upiVal = upi.value.trim();
- if(!upiVal) return alert("❌ Enter UPI ID");
- if(!upiVal.includes('@')) return alert("❌ Invalid UPI format");
- 
- let o = get();
- o.upi = upiVal;
- save(o);
- 
- let msg = document.getElementById('upiMsg');
- msg.innerText = "✅ UPI Saved Successfully";
- msg.className = "status-msg success";
- setTimeout(() => msg.className = "status-msg", 3000);
-}
+        function submitUTR() {
+            const utr = document.getElementById('utrNumber').value.trim();
+            const amt = parseInt(document.getElementById('payAmount').textContent);
 
-function withdraw(){
- let o = get();
- let amount = parseFloat(wdAmount.value);
- 
- if(!o.upi) {
-  let msg = document.getElementById('wdMsg');
-  msg.innerText = "❌ Add UPI ID first";
-  msg.className = "status-msg error";
-  return;
- }
- if(isNaN(amount) || amount < 50) {
-  let msg = document.getElementById('wdMsg');
-  msg.innerText = "❌ Minimum ₹50";
-  msg.className = "status-msg error";
-  return;
- }
- if(amount > 5000) {
-  let msg = document.getElementById('wdMsg');
-  msg.innerText = "❌ Maximum ₹5000";
-  msg.className = "status-msg error";
-  return;
- }
- if(amount > o.balance) {
-  let msg = document.getElementById('wdMsg');
-  msg.innerText = "❌ Insufficient balance";
-  msg.className = "status-msg error";
-  return;
- }
- 
- o.balance -= amount;
- o.totalWithdrawn += amount;
- save(o);
- wdAmount.value = "";
- 
- let msg = document.getElementById('wdMsg');
- msg.innerText = "✅ Withdrawal requested! You'll receive ₹" + amount + " in 24 hours";
- msg.className = "status-msg success";
- setTimeout(() => msg.className = "status-msg", 5000);
-}
+            if (!utr || utr.length < 10) {
+                notify('❌ Enter valid UTR number');
+                return;
+            }
 
-// ============ LOGOUT ============
-function logout(){
- if(confirm("Are you sure you want to logout?")){
-  userPhone = null;
-  authBox.classList.remove('hide');
-  mainApp.classList.add('hide');
-  navBar.classList.add('hide');
-  registerBox.classList.remove('hide');
-  loginBox.classList.add('hide');
-  document.getElementById('lPhone').value = "";
-  document.getElementById('lPass').value = "";
-  alert("✅ Logged out successfully");
- }
-}
-</script>
+            u.pending.push({
+                id: Math.random().toString(36).substr(2, 9),
+                amt: amt,
+                utr: utr,
+                time: new Date().toLocaleTimeString(),
+                date: new Date().toLocaleDateString(),
+                status: 'pending'
+            });
 
+            u.tranList.unshift({ 
+                type: 'Deposit Request', 
+                amt: amt, 
+                icon: '⏳', 
+                time: new Date().toLocaleTimeString(), 
+                status: 'pending',
+                utr: utr
+            });
+
+            save();
+            updateAll();
+            document.getElementById('utrNumber').value = '';
+            document.getElementById('paymentForm').classList.add('hidden');
+            notify('✅ UTR submitted! Pending admin approval');
+        }
+
+        function cancelPayment() {
+            document.getElementById('paymentForm').classList.add('hidden');
+            document.getElementById('depForm').classList.remove('hidden');
+            document.getElementById('utrNumber').value = '';
+        }
+
+        function procWith() {
+            const a = parseInt(document.getElementById('withAmt').value) || 0;
+            const ac = document.getElementById('accNum').value.trim();
+            const ifc = document.getElementById('ifsc').value.trim();
+            const an = document.getElementById('accName').value.trim();
+            const err = document.getElementById('withErr');
+
+            if (u.dep === 0) {
+                err.textContent = '❌ Make a deposit of ₹100 first';
+                err.classList.add('show');
+                setTimeout(() => err.classList.remove('show'), 3000);
+                return;
+            }
+            if (a < 300) {
+                err.textContent = '❌ Minimum withdrawal is ₹300';
+                err.classList.add('show');
+                setTimeout(() => err.classList.remove('show'), 3000);
+                return;
+            }
+            if (a > u.win) {
+                err.textContent = '❌ Insufficient balance';
+                err.classList.add('show');
+                setTimeout(() => err.classList.remove('show'), 3000);
+                return;
+            }
+            if (!ac || !ifc || !an) {
+                err.textContent = '❌ Fill all required fields';
+                err.classList.add('show');
+                setTimeout(() => err.classList.remove('show'), 3000);
+                return;
+            }
+
+            u.win -= a;
+            u.tranList.unshift({ type: 'Withdraw', amt: a, icon: '➖', time: new Date().toLocaleTimeString(), status: 'approved' });
+            save();
+            updateAll();
+            document.getElementById('withAmt').value = '';
+            document.getElementById('accNum').value = '';
+            document.getElementById('ifsc').value = '';
+            document.getElementById('accName').value = '';
+            document.getElementById('withForm').classList.add('hidden');
+            notify('✅ Withdrawal requested! Processing in 4-24 hours');
+        }
+
+        function updateAll() {
+            if (!u.logged) return;
+
+            document.getElementById('uName').textContent = u.name;
+            document.getElementById('depBal').textContent = u.dep;
+            document.getElementById('winBal').textContent = u.win;
+            document.getElementById('spinBal').textContent = u.dep + u.win;
+            document.getElementById('freeSpins').textContent = 'FREE SPINS: ' + u.freeSpins;
+            document.getElementById('wlDep').textContent = u.dep;
+            document.getElementById('wlWin').textContent = u.win;
+            document.getElementById('wlTot').textContent = u.dep + u.win;
+            document.getElementById('pName').textContent = u.name;
+            document.getElementById('pEmail').textContent = u.email;
+            document.getElementById('pId').textContent = u.id || 'ID-001';
+            document.getElementById('pDate').textContent = u.created || 'Today';
+            document.getElementById('pSpins').textContent = u.spins;
+            document.getElementById('pTasks').textContent = u.tasks;
+            document.getElementById('pEarn').textContent = u.totalEarn;
+
+            updAct();
+            updTask();
+            updTrans();
+            drawWheel();
+        }
+
+        function updAct() {
+            const l = document.getElementById('actList');
+            if (u.tranList.length === 0) {
+                l.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>No activity yet</p></div>';
+                return;
+            }
+            l.innerHTML = u.tranList.slice(0, 5).map(t => `
+                <div class="transaction-item">
+                    <div class="transaction-icon">${t.icon}</div>
+                    <div class="transaction-info">
+                        <div class="transaction-title">${t.type}</div>
+                        <div class="transaction-time">${t.time}</div>
+                    </div>
+                    <div class="transaction-amount">
+                        ${t.type === 'Withdraw' ? '-' : '+'}₹${t.amt}
+                        <span class="transaction-status ${t.status === 'pending' ? 'status-pending' : 'status-approved'}">${t.status === 'pending' ? '⏳' : '✓'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updTask() {
+            const l = document.getElementById('doneList');
+            if (u.taskList.length === 0) {
+                l.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>No tasks completed</p></div>';
+                return;
+            }
+            l.innerHTML = u.taskList.map(t => `
+                <div class="transaction-item">
+                    <div class="transaction-icon">✅</div>
+                    <div class="transaction-info">
+                        <div class="transaction-title">${t.name}</div>
+                        <div class="transaction-time">${t.time}</div>
+                    </div>
+                    <div class="transaction-amount">+₹${t.amt}</div>
+                </div>
+            `).join('');
+        }
+
+        function updTrans() {
+            const l = document.getElementById('transList');
+            if (u.tranList.length === 0) {
+                l.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>No transactions</p></div>';
+                return;
+            }
+            l.innerHTML = u.tranList.map(t => `
+                <div class="transaction-item">
+                    <div class="transaction-icon">${t.icon}</div>
+                    <div class="transaction-info">
+                        <div class="transaction-title">${t.type} ${t.utr ? '(UTR: ' + t.utr + ')' : ''}</div>
+                        <div class="transaction-time">${t.time}</div>
+                    </div>
+                    <div class="transaction-amount">
+                        ${t.type === 'Withdraw' ? '-' : '+'}₹${t.amt}
+                        <span class="transaction-status ${t.status === 'pending' ? 'status-pending' : 'status-approved'}">${t.status === 'pending' ? '⏳ Pending' : '✓ Done'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function notify(msg) {
+            const n = document.getElementById('notif');
+            n.textContent = msg;
+            n.classList.add('show');
+            setTimeout(() => n.classList.remove('show'), 3000);
+        }
+
+        function drawWheel() {
+            const c = document.getElementById('wheel');
+            if (!c) return;
+            const ctx = c.getContext('2d');
+            const prizes = ['₹50', '₹100', '₹500', '₹200', '₹150', '₹75', '₹300', '₹250'];
+            const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#95E1D3', '#C7CEEA', '#FF8B94', '#A8E6CF', '#FFD3B6'];
+            
+            const cx = 140, cy = 140, r = 125;
+            const angle = (Math.PI * 2) / prizes.length;
+
+            prizes.forEach((prize, i) => {
+                const start = i * angle;
+                const end = (i + 1) * angle;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, r, start, end);
+                ctx.closePath();
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(start + angle / 2);
+                ctx.textAlign = 'right';
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 13px Arial';
+                ctx.fillText(prize, r - 30, 5);
+                ctx.restore();
+            });
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, 20, 0, Math.PI * 2);
+            ctx.fillStyle = '#FF6B00';
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('⭐', cx, cy);
+        }
+
+        load();
+        if (u.logged) {
+            goHome();
+        } else {
+            toLogin();
+        }
+    </script>
 </body>
 </html>
